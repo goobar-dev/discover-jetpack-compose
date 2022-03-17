@@ -3,6 +3,7 @@ package dev.goobar.hellocompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,17 +26,24 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.Factory
 import dev.goobar.hellocompose.androidversiondetails.AndroidVersionDetails
+import dev.goobar.hellocompose.androidversiondetails.AndroidVersionDetailsViewModel
 import dev.goobar.hellocompose.androidversionslist.AndroidVersionsList
+import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel
+import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel.Event.SortChanged
 import dev.goobar.hellocompose.androidversionslist.Sort
 import dev.goobar.hellocompose.androidversionslist.Sort.ASCENDING
 import dev.goobar.hellocompose.androidversionslist.Sort.DESCENDING
@@ -57,8 +65,12 @@ class MainActivity : ComponentActivity() {
   @Composable
   private fun MainActivityContent() {
 
-    var selectedItem by remember { mutableStateOf<AndroidVersionInfo?>(null) }
-    var sort by remember { mutableStateOf<Sort>(ASCENDING) }
+    var selectedItem by rememberSaveable { mutableStateOf<AndroidVersionInfo?>(null) }
+
+    val versionsListViewModel by viewModels<AndroidVersionsListViewModel>()
+    val versionsListState by versionsListViewModel.state.collectAsState()
+
+
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
       bottomSheetState = BottomSheetState(Collapsed)
     )
@@ -88,7 +100,7 @@ class MainActivity : ComponentActivity() {
         onSortSelected = { selectedSort ->
           coroutineScope.launch {
             bottomSheetScaffoldState.bottomSheetState.collapse()
-            sort = selectedSort
+            versionsListViewModel.onEvent(SortChanged(selectedSort))
             bottomSheetScaffoldState.snackbarHostState.showSnackbar(
               message = when (selectedSort) {
                 ASCENDING -> "Showing oldest first"
@@ -102,20 +114,15 @@ class MainActivity : ComponentActivity() {
     ) {
       when (val currentItem = selectedItem) {
         null -> {
-          val versionList = when (sort) {
-            ASCENDING -> AndroidVersionsRepository.data.sortedBy { it.apiVersion }
-            DESCENDING -> AndroidVersionsRepository.data.sortedByDescending { it.apiVersion }
-          }
           AndroidVersionsList(
-            versions = versionList,
-            sort = sort,
+            state = versionsListState,
             onClick = { clickedInfo -> selectedItem = clickedInfo }
           )
         }
-        else -> AndroidVersionDetails(
-          info = currentItem,
-          onBackClick = { selectedItem = null }
-        )
+        else -> {
+          val viewModel = AndroidVersionDetailsViewModel(currentItem)
+          AndroidVersionDetails(viewModel = viewModel, onBackClick = { selectedItem = null })
+        }
       }
     }
   }

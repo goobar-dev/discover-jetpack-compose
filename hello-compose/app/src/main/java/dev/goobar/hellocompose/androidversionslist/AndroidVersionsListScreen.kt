@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import dev.goobar.hellocompose.AndroidVersionInfo
 import dev.goobar.hellocompose.AndroidVersionsRepository
 import dev.goobar.hellocompose.R.drawable
+import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel.State.AndroidVersionViewItem
 import dev.goobar.hellocompose.androidversionslist.Sort.ASCENDING
 import dev.goobar.hellocompose.androidversionslist.Sort.DESCENDING
 
@@ -37,15 +38,14 @@ enum class Sort {
 
 @Composable
 fun AndroidVersionsList(
-  versions: List<AndroidVersionInfo>,
-  sort: Sort = ASCENDING,
+  state: AndroidVersionsListViewModel.State,
   onClick: (AndroidVersionInfo) -> Unit
 ) {
   LazyColumn(
     contentPadding = PaddingValues(20.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp)
   ) {
-    items(versions) { info ->
+    items(state.versionsList) { info ->
       AndroidVersionInfoCard(info, onClick)
     }
   }
@@ -53,7 +53,7 @@ fun AndroidVersionsList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AndroidVersionInfoCard(info: AndroidVersionInfo, onClick: (AndroidVersionInfo) -> Unit) {
+private fun AndroidVersionInfoCard(viewItem: AndroidVersionViewItem, onClick: (AndroidVersionInfo) -> Unit) {
   val context = LocalContext.current
 
   Card(modifier = Modifier
@@ -62,10 +62,10 @@ private fun AndroidVersionInfoCard(info: AndroidVersionInfo, onClick: (AndroidVe
     .combinedClickable(
       onLongClick = {
         Toast
-          .makeText(context, "${info.publicName} is my favorite!", Toast.LENGTH_SHORT)
+          .makeText(context, "${viewItem.title} is my favorite!", Toast.LENGTH_SHORT)
           .show()
       },
-      onClick = { onClick(info) }
+      onClick = { onClick(viewItem.info) }
     )
   ) {
     Row(
@@ -78,11 +78,11 @@ private fun AndroidVersionInfoCard(info: AndroidVersionInfo, onClick: (AndroidVe
         contentDescription = "Android icon"
       )
       Column(modifier = Modifier.padding(start = 20.dp)) {
-        Text(text = info.publicName, style = MaterialTheme.typography.h4)
-        Text(text = "${info.codename} - API ${info.apiVersion}")
+        Text(text = viewItem.title, style = MaterialTheme.typography.h4)
+        Text(text = viewItem.subtitle)
         Text(
           modifier = Modifier.padding(top = 4.dp),
-          text = info.details,
+          text = viewItem.description,
           maxLines = 2,
           overflow = TextOverflow.Ellipsis
         )

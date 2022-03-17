@@ -6,20 +6,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.goobar.hellocompose.AndroidVersionInfo
 
 @Composable
-fun AndroidVersionDetails(info: AndroidVersionInfo, onBackClick: () -> Unit) {
+fun AndroidVersionDetails(viewModel: AndroidVersionDetailsViewModel, onBackClick: () -> Unit) {
+
+  val state: AndroidVersionDetailsViewModel.State by viewModel.state.collectAsState()
+
   BackHandler(enabled = true, onBack = onBackClick)
   Column(modifier = Modifier.padding(20.dp)) {
-    Text(text = info.publicName, style = MaterialTheme.typography.h3)
-    Text(text = "${info.codename} - API ${info.apiVersion}", style = MaterialTheme.typography.subtitle2)
+    Text(text = state.title, style = MaterialTheme.typography.h3)
+    Text(text = state.subtitle, style = MaterialTheme.typography.subtitle2)
     Text(
       modifier = Modifier.padding(top = 20.dp),
-      text = info.details,
+      text = state.description,
       maxLines = 2,
       overflow = TextOverflow.Ellipsis
     )
