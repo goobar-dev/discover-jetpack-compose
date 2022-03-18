@@ -1,10 +1,15 @@
 package dev.goobar.hellocompose.main
 
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onChildAt
 import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import dev.goobar.hellocompose.AndroidVersionInfo
 import dev.goobar.hellocompose.AndroidVersionsRepository
 import dev.goobar.hellocompose.design.HelloComposeTheme
@@ -40,11 +45,11 @@ class MainScreenPhoneContentTest {
 
   @Test
   fun versionsListDisplaysFirstVersionInfo() {
-    val testDate = getTestData()
+    val testData = getTestData()
     composeTestRule.setContent {
       HelloComposeTheme {
         MainScreenPhoneContent(
-          versionsListState = testDate,
+          versionsListState = testData,
           selectedItem = null,
           onVersionInfoClick = {},
           onBackClick = {}
@@ -55,15 +60,21 @@ class MainScreenPhoneContentTest {
     // find the list
     // get the first child of the list
     // verify that the child includes the expected title text
+    composeTestRule
+      .onNodeWithTag(testTag = "Versions List")
+      .assertExists(errorMessageOnFail = "Versions List Missing")
+      .onChildren()
+      .onFirst()
+      .assert(hasText(testData.versionsList.first().title))
   }
 
   @Test
   fun printTreeToLog() {
-    val testDate = getTestData()
+    val testData = getTestData()
     composeTestRule.setContent {
       HelloComposeTheme {
         MainScreenPhoneContent(
-          versionsListState = testDate,
+          versionsListState = testData,
           selectedItem = null,
           onVersionInfoClick = {},
           onBackClick = {}
@@ -74,17 +85,18 @@ class MainScreenPhoneContentTest {
     // print the semantics tree to logcat to examine it
     // add custom testTag to individual list items to make them easier to identify
     // print a third time using unmerged tree
+    composeTestRule.onRoot(useUnmergedTree = true).printToLog("Semantics")
   }
 
   @Test
   fun versionInfoClickHandlerCalledWhenCardIsClicked() {
-    val testDate = getTestData()
+    val testData = getTestData()
     var selectedItem: AndroidVersionInfo? = null
 
     composeTestRule.setContent {
       HelloComposeTheme {
         MainScreenPhoneContent(
-          versionsListState = testDate,
+          versionsListState = testData,
           selectedItem = null,
           onVersionInfoClick = { clickedInfo -> selectedItem = clickedInfo },
           onBackClick = {}
@@ -93,6 +105,12 @@ class MainScreenPhoneContentTest {
     }
 
     // verify that the selected item is correctly updated when the first card is clicked
+    composeTestRule
+      .onNodeWithTag("Versions List")
+      .onChildAt(0)
+      .performClick()
+
+    assert(selectedItem == testData.versionsList.first().info)
   }
 }
 

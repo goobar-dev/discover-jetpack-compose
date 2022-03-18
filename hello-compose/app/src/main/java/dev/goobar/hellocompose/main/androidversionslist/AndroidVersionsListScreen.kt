@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,11 +49,16 @@ fun AndroidVersionsList(
     Configuration.ORIENTATION_LANDSCAPE -> {
       LazyRow(
         contentPadding = PaddingValues(20.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.testTag("Versions List")
       ) {
         items(state.versionsList) { info ->
           AndroidVersionInfoCard(
-            Modifier.fillMaxHeight(1f).defaultMinSize(minHeight = 400.dp).width(Min),
+            Modifier
+              .fillMaxHeight(1f)
+              .defaultMinSize(minHeight = 400.dp)
+              .width(Min)
+              .testTag(info.title),
             info,
             onClick
           )
@@ -62,11 +68,15 @@ fun AndroidVersionsList(
     else -> {
       LazyColumn(
         contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.testTag("Versions List")
       ) {
         items(state.versionsList) { info ->
           AndroidVersionInfoCard(
-            Modifier.fillMaxWidth(1f).defaultMinSize(minHeight = 120.dp),
+            Modifier
+              .fillMaxWidth(1f)
+              .defaultMinSize(minHeight = 120.dp)
+              .testTag(info.title),
             info,
             onClick
           )
