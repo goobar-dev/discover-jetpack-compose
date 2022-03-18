@@ -1,5 +1,6 @@
 package dev.goobar.hellocompose.main
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,9 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.goobar.hellocompose.AndroidVersionInfo
+import dev.goobar.hellocompose.AndroidVersionsRepository
 import dev.goobar.hellocompose.R.drawable
 import dev.goobar.hellocompose.main.androidversiondetails.AndroidVersionDetails
 import dev.goobar.hellocompose.main.androidversiondetails.AndroidVersionDetailsViewModel
@@ -46,6 +49,7 @@ import dev.goobar.hellocompose.main.androidversionslist.Sort
 import dev.goobar.hellocompose.main.androidversionslist.Sort.ASCENDING
 import dev.goobar.hellocompose.main.androidversionslist.Sort.DESCENDING
 import dev.goobar.hellocompose.design.HelloComposeTheme
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsListViewModel.State.AndroidVersionViewItem
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -173,12 +177,135 @@ private fun MainBottomSheetContent(
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-@Preview
+@Preview(group = "Light Theme")
 @Composable
 fun MainActivityContent_EmptyData_Preview() {
   HelloComposeTheme() {
     MainActivityContent(
       versionsListState = AndroidVersionsListViewModel.State(emptyList())
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(group = "Light Theme")
+@Composable
+fun MainActivityContent_SingleItem_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(
+        listOf(
+          AndroidVersionViewItem(
+            title = "Android 5",
+            subtitle = "Lollipop - api 21",
+            description = "A sample Android version description",
+            info = AndroidVersionInfo(21, "Android 5", "Lollipop", "A sample Android version description")
+          )
+        )
+      )
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(group = "Light Theme")
+@Composable
+fun MainActivityContent_AllItems_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(
+        AndroidVersionsRepository.data.map { AndroidVersionViewItem(it.publicName, it.codename, it.details, it) }
+      )
+    )
+  }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(uiMode = UI_MODE_NIGHT_YES, group = "Dark Theme")
+@Composable
+fun MainActivityContent_EmptyData_DarkTheme_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(emptyList())
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(uiMode = UI_MODE_NIGHT_YES, group = "Dark Theme")
+@Composable
+fun MainActivityContent_SingleItem_DarkTheme_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(
+        listOf(
+          AndroidVersionViewItem(
+            title = "Android 5",
+            subtitle = "Lollipop - api 21",
+            description = "A sample Android version description",
+            info = AndroidVersionInfo(21, "Android 5", "Lollipop", "A sample Android version description")
+          )
+        )
+      )
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(uiMode = UI_MODE_NIGHT_YES, group = "Dark Theme")
+@Composable
+fun MainActivityContent_AllItems_DarkTheme_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(
+        AndroidVersionsRepository.data.map { AndroidVersionViewItem(it.publicName, it.codename, it.details, it) }
+      )
+    )
+  }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(uiMode = UI_MODE_NIGHT_YES, group = "Tablet Dark Theme", device = Devices.NEXUS_9)
+@Composable
+fun MainActivityContent_EmptyData_DarkTheme_Tablet_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(emptyList())
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(uiMode = UI_MODE_NIGHT_YES, group = "Tablet Dark Theme", device = Devices.NEXUS_9)
+@Composable
+fun MainActivityContent_SingleItem_DarkTheme_Tablet_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(
+        listOf(
+          AndroidVersionViewItem(
+            title = "Android 5",
+            subtitle = "Lollipop - api 21",
+            description = "A sample Android version description",
+            info = AndroidVersionInfo(21, "Android 5", "Lollipop", "A sample Android version description")
+          )
+        )
+      )
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(uiMode = UI_MODE_NIGHT_YES, group = "Tablet Dark Theme", device = Devices.PIXEL_C)
+@Composable
+fun MainActivityContent_AllItems_DarkTheme_Tablet_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(
+        AndroidVersionsRepository.data.map { AndroidVersionViewItem(it.publicName, it.codename, it.details, it) }
+      )
     )
   }
 }
