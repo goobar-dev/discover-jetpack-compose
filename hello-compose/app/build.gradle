@@ -47,4 +47,9 @@ dependencies {
   implementation "androidx.compose.ui:ui:$compose_version"
   implementation "androidx.compose.material:material:$compose_version"
   implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+
+  // Test rules and transitive dependencies:
+  androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
+  // Needed for createComposeRule, but not createAndroidComposeRule:
+  debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
 }

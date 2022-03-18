@@ -8,5 +8,6 @@
 - [Compose Multiplatform](https://www.jetbrains.com/lp/compose-mpp/)
 
 ## 🛠 Useful Tools
+= [Compose Testing Cheatsheet](https://developer.android.com/jetpack/compose/testing-cheatsheet)
 - [Material Design Components Android Compose Theme Adapter](https://github.com/material-components/material-components-android-compose-theme-adapter)
 - [Jetpack Compose Source Code Browser](https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/compose/)
