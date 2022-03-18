@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue.Collapsed
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.goobar.hellocompose.AndroidVersionInfo
 import dev.goobar.hellocompose.R.drawable
@@ -52,15 +54,15 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       HelloComposeTheme() {
-        MainActivityContent()
+        MainActivityScreen()
       }
     }
   }
 
+
   @OptIn(ExperimentalMaterialApi::class)
   @Composable
-  private fun MainActivityContent() {
-
+  private fun MainActivityScreen() {
     var selectedItem by rememberSaveable { mutableStateOf<AndroidVersionInfo?>(null) }
     val versionsListViewModel by viewModels<AndroidVersionsListViewModel>()
     val versionsListState by versionsListViewModel.state.collectAsState()
@@ -68,79 +70,115 @@ class MainActivity : ComponentActivity() {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = BottomSheetState(Collapsed))
     val coroutineScope = rememberCoroutineScope()
 
-    BottomSheetScaffold(
-      scaffoldState = bottomSheetScaffoldState,
-      topBar = {
-        MainAppBar(
-          selectedItem = selectedItem,
-          onBackClick = { selectedItem = null },
-          onSortClick = {
-            coroutineScope.launch {
-              if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                bottomSheetScaffoldState.bottomSheetState.expand()
-              } else {
-                bottomSheetScaffoldState.bottomSheetState.collapse()
-              }
-            }
-          }
-        )
-      },
-      sheetContent = { MainBottomSheetContent(
-        onCloseClicked = {
-          coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
-        },
-        onSortSelected = { selectedSort ->
-          coroutineScope.launch {
+    MainActivityContent(
+      versionsListState,
+      selectedItem,
+      bottomSheetScaffoldState,
+      { selectedItem = null },
+      {
+        coroutineScope.launch {
+          if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+            bottomSheetScaffoldState.bottomSheetState.expand()
+          } else {
             bottomSheetScaffoldState.bottomSheetState.collapse()
-            versionsListViewModel.onEvent(SortChanged(selectedSort))
-            bottomSheetScaffoldState.snackbarHostState.showSnackbar(
-              message = when (selectedSort) {
-                ASCENDING -> "Showing oldest first"
-                DESCENDING -> "Showing newest first"
-              }
-            )
           }
         }
-      ) },
-      sheetPeekHeight = 0.dp
-    ) {
-      MainScreenContent(
-        versionsListState = versionsListState,
-        selectedItem = selectedItem,
-        onVersionInfoClick = { clickedInfo -> selectedItem = clickedInfo },
-        onBackClick = { selectedItem = null }
-      )
-    }
-  }
+      },
+      onCloseClicked = {
+        coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
+      },
+      onSortSelected = { selectedSort ->
+        coroutineScope.launch {
+          bottomSheetScaffoldState.bottomSheetState.collapse()
+          versionsListViewModel.onEvent(SortChanged(selectedSort))
+          bottomSheetScaffoldState.snackbarHostState.showSnackbar(
+            message = when (selectedSort) {
+              ASCENDING -> "Showing oldest first"
+              DESCENDING -> "Showing newest first"
+            }
+          )
+        }
+      },
+      onVersionInfoClick = { clickedInfo -> selectedItem = clickedInfo }
+    )
 
-  @Composable
-  private fun MainBottomSheetContent(
-    onSortSelected: (Sort) -> Unit,
-    onCloseClicked: () -> Unit
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun MainActivityContent(
+  versionsListState: AndroidVersionsListViewModel.State,
+  selectedItem: AndroidVersionInfo? = null,
+  scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = BottomSheetState(Collapsed)),
+  onBackClick: () -> Unit = {},
+  onSortClick: () -> Unit = {},
+  onCloseClicked: () -> Unit = {},
+  onSortSelected: (Sort) -> Unit = {},
+  onVersionInfoClick: (AndroidVersionInfo) -> Unit = {}
+) {
+  BottomSheetScaffold(
+    scaffoldState = scaffoldState,
+    topBar = {
+      MainAppBar(
+        selectedItem = selectedItem,
+        onBackClick = onBackClick,
+        onSortClick = onSortClick,
+      )
+    },
+    sheetContent = { MainBottomSheetContent(
+      onCloseClicked = onCloseClicked,
+      onSortSelected = onSortSelected
+    ) },
+    sheetPeekHeight = 0.dp
   ) {
-    Column(modifier = Modifier
-      .defaultMinSize(minHeight = 160.dp)
-      .fillMaxWidth(1f)
-      .padding(20.dp)) {
-      Text(
-        text = "Close",
-        modifier = Modifier
-          .align(Alignment.End)
-          .clickable { onCloseClicked() },
-        color = MaterialTheme.colors.error
-      )
-      Text(
-        text = "Newest first",
-        modifier = Modifier
-          .padding(vertical = 8.dp)
-          .clickable { onSortSelected(DESCENDING) }
-      )
-      Text(
-        text = "Oldest first",
-        modifier = Modifier
-          .padding(vertical = 8.dp)
-          .clickable { onSortSelected(ASCENDING) }
-      )
-    }
+    MainScreenContent(
+      versionsListState = versionsListState,
+      selectedItem = selectedItem,
+      onVersionInfoClick = onVersionInfoClick,
+      onBackClick = onBackClick
+    )
+  }
+}
+
+@Composable
+private fun MainBottomSheetContent(
+  onSortSelected: (Sort) -> Unit,
+  onCloseClicked: () -> Unit
+) {
+  Column(modifier = Modifier
+    .defaultMinSize(minHeight = 160.dp)
+    .fillMaxWidth(1f)
+    .padding(20.dp)) {
+    Text(
+      text = "Close",
+      modifier = Modifier
+        .align(Alignment.End)
+        .clickable { onCloseClicked() },
+      color = MaterialTheme.colors.error
+    )
+    Text(
+      text = "Newest first",
+      modifier = Modifier
+        .padding(vertical = 8.dp)
+        .clickable { onSortSelected(DESCENDING) }
+    )
+    Text(
+      text = "Oldest first",
+      modifier = Modifier
+        .padding(vertical = 8.dp)
+        .clickable { onSortSelected(ASCENDING) }
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview
+@Composable
+fun MainActivityContent_EmptyData_Preview() {
+  HelloComposeTheme() {
+    MainActivityContent(
+      versionsListState = AndroidVersionsListViewModel.State(emptyList())
+    )
   }
 }
