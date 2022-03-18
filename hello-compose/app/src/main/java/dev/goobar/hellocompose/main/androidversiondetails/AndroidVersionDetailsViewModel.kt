@@ -1,4 +1,4 @@
-package dev.goobar.hellocompose.androidversiondetails
+package dev.goobar.hellocompose.main.androidversiondetails
 
 import androidx.lifecycle.ViewModel
 import dev.goobar.hellocompose.AndroidVersionInfo

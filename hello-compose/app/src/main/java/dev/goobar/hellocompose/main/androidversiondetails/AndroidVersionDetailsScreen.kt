@@ -1,4 +1,4 @@
-package dev.goobar.hellocompose.androidversiondetails
+package dev.goobar.hellocompose.main.androidversiondetails
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.goobar.hellocompose.AndroidVersionInfo
 
 @Composable
 fun AndroidVersionDetails(viewModel: AndroidVersionDetailsViewModel, onBackClick: () -> Unit) {

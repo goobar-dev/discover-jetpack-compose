@@ -1,9 +1,8 @@
-package dev.goobar.hellocompose.androidversionslist
+package dev.goobar.hellocompose.main.androidversionslist
 
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,11 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.goobar.hellocompose.AndroidVersionInfo
-import dev.goobar.hellocompose.AndroidVersionsRepository
 import dev.goobar.hellocompose.R.drawable
-import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel.State.AndroidVersionViewItem
-import dev.goobar.hellocompose.androidversionslist.Sort.ASCENDING
-import dev.goobar.hellocompose.androidversionslist.Sort.DESCENDING
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsListViewModel.State.AndroidVersionViewItem
 
 enum class Sort {
   ASCENDING, DESCENDING

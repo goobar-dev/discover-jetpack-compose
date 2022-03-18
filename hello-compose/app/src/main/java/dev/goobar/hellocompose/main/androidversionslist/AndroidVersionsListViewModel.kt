@@ -1,14 +1,13 @@
-package dev.goobar.hellocompose.androidversionslist
+package dev.goobar.hellocompose.main.androidversionslist
 
 import androidx.lifecycle.ViewModel
 import dev.goobar.hellocompose.AndroidVersionInfo
 import dev.goobar.hellocompose.AndroidVersionsRepository
-import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel.Event.SortChanged
-import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel.State.AndroidVersionViewItem
-import dev.goobar.hellocompose.androidversionslist.Sort.ASCENDING
-import dev.goobar.hellocompose.androidversionslist.Sort.DESCENDING
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsListViewModel.Event.SortChanged
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsListViewModel.State.AndroidVersionViewItem
+import dev.goobar.hellocompose.main.androidversionslist.Sort.ASCENDING
+import dev.goobar.hellocompose.main.androidversionslist.Sort.DESCENDING
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class AndroidVersionsListViewModel : ViewModel() {

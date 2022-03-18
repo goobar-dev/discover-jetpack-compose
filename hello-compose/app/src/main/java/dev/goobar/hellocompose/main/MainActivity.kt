@@ -1,4 +1,4 @@
-package dev.goobar.hellocompose
+package dev.goobar.hellocompose.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,40 +13,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.BottomSheetValue.Collapsed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider.Factory
-import dev.goobar.hellocompose.androidversiondetails.AndroidVersionDetails
-import dev.goobar.hellocompose.androidversiondetails.AndroidVersionDetailsViewModel
-import dev.goobar.hellocompose.androidversionslist.AndroidVersionsList
-import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel
-import dev.goobar.hellocompose.androidversionslist.AndroidVersionsListViewModel.Event.SortChanged
-import dev.goobar.hellocompose.androidversionslist.Sort
-import dev.goobar.hellocompose.androidversionslist.Sort.ASCENDING
-import dev.goobar.hellocompose.androidversionslist.Sort.DESCENDING
+import dev.goobar.hellocompose.AndroidVersionInfo
+import dev.goobar.hellocompose.R.drawable
+import dev.goobar.hellocompose.main.androidversiondetails.AndroidVersionDetails
+import dev.goobar.hellocompose.main.androidversiondetails.AndroidVersionDetailsViewModel
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsList
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsListViewModel
+import dev.goobar.hellocompose.main.androidversionslist.AndroidVersionsListViewModel.Event.SortChanged
+import dev.goobar.hellocompose.main.androidversionslist.Sort
+import dev.goobar.hellocompose.main.androidversionslist.Sort.ASCENDING
+import dev.goobar.hellocompose.main.androidversionslist.Sort.DESCENDING
 import dev.goobar.hellocompose.design.HelloComposeTheme
 import kotlinx.coroutines.launch
 
@@ -66,14 +62,10 @@ class MainActivity : ComponentActivity() {
   private fun MainActivityContent() {
 
     var selectedItem by rememberSaveable { mutableStateOf<AndroidVersionInfo?>(null) }
-
     val versionsListViewModel by viewModels<AndroidVersionsListViewModel>()
     val versionsListState by versionsListViewModel.state.collectAsState()
 
-
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-      bottomSheetState = BottomSheetState(Collapsed)
-    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = BottomSheetState(Collapsed))
     val coroutineScope = rememberCoroutineScope()
 
     BottomSheetScaffold(
@@ -112,18 +104,12 @@ class MainActivity : ComponentActivity() {
       ) },
       sheetPeekHeight = 0.dp
     ) {
-      when (val currentItem = selectedItem) {
-        null -> {
-          AndroidVersionsList(
-            state = versionsListState,
-            onClick = { clickedInfo -> selectedItem = clickedInfo }
-          )
-        }
-        else -> {
-          val viewModel = AndroidVersionDetailsViewModel(currentItem)
-          AndroidVersionDetails(viewModel = viewModel, onBackClick = { selectedItem = null })
-        }
-      }
+      MainScreenPhoneContent(
+        versionsListState = versionsListState,
+        selectedItem = selectedItem,
+        onVersionInfoClick = { clickedInfo -> selectedItem = clickedInfo },
+        onBackClick = { selectedItem = null }
+      )
     }
   }
 
@@ -141,7 +127,7 @@ class MainActivity : ComponentActivity() {
           Row() {
             Text("Hello Jetpack Compose", modifier = Modifier.weight(1f))
             Icon(
-              painter = painterResource(id = R.drawable.ic_sort),
+              painter = painterResource(id = drawable.ic_sort),
               contentDescription = "Sort icon",
               modifier = Modifier.clickable { onSortClick() }
             )
@@ -149,7 +135,7 @@ class MainActivity : ComponentActivity() {
         }
         else -> {
           IconButton(onClick = onBackClick) {
-            Icon(painter = painterResource(id = R.drawable.ic_arrow_back), contentDescription = "Back arrow")
+            Icon(painter = painterResource(id = drawable.ic_arrow_back), contentDescription = "Back arrow")
           }
           Text(text = selectedItem.publicName, modifier = Modifier.padding(start = 20.dp))
         }

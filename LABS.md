@@ -45,3 +45,8 @@ implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
 - Each `ViewModel` should expose a `StateFlow` called `state` that is used to bind the UI
 - Use `rememberSaveable` to ensure that the `selectedItem` state is persisted across orientation change
 - Move sort management to `AndroidVersionsListViewModel`
+
+## Lesson 7 - Adaptive Design
+- Use `LocalConfiguration.current` to check `smallestScreenWidthDp` to determine whether to show phone or tablet content
+- If running on a tablet, show both the list and the details content at the same time
+- If running in landscape orientation, the list show scroll horizontally
