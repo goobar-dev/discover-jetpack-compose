@@ -104,42 +104,12 @@ class MainActivity : ComponentActivity() {
       ) },
       sheetPeekHeight = 0.dp
     ) {
-      MainScreenPhoneContent(
+      MainScreenContent(
         versionsListState = versionsListState,
         selectedItem = selectedItem,
         onVersionInfoClick = { clickedInfo -> selectedItem = clickedInfo },
         onBackClick = { selectedItem = null }
       )
-    }
-  }
-
-  @Composable
-  private fun MainAppBar(
-    selectedItem: AndroidVersionInfo?,
-    onBackClick: () -> Unit,
-    onSortClick: () -> Unit
-  ) {
-    TopAppBar(
-      contentPadding = PaddingValues(horizontal = 20.dp),
-    ) {
-      when (selectedItem) {
-        null -> {
-          Row() {
-            Text("Hello Jetpack Compose", modifier = Modifier.weight(1f))
-            Icon(
-              painter = painterResource(id = drawable.ic_sort),
-              contentDescription = "Sort icon",
-              modifier = Modifier.clickable { onSortClick() }
-            )
-          }
-        }
-        else -> {
-          IconButton(onClick = onBackClick) {
-            Icon(painter = painterResource(id = drawable.ic_arrow_back), contentDescription = "Back arrow")
-          }
-          Text(text = selectedItem.publicName, modifier = Modifier.padding(start = 20.dp))
-        }
-      }
     }
   }
 
